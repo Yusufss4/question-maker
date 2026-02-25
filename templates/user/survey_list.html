@@ -26,7 +26,7 @@
                 {% if form.option.errors %}<div class="text-danger small mt-1">{{ form.option.errors.0 }}</div>{% endif %}
                 {% if form.non_field_errors %}<div class="text-danger small mt-1">{{ form.non_field_errors.0 }}</div>{% endif %}
             </div>
-            <button type="submit" class="btn btn-primary">Submit vote</button>
+            <button type="submit" class="btn btn-dark">Submit vote</button>
         </form>
         {% endif %}
     </div>
@@ -65,7 +65,7 @@
                 </tbody>
                 </table>
         </div>
-        <a href="{% url 'core:results_detail' survey.pk %}" class="btn btn-primary btn-sm">View full results</a>
+        <a href="{% url 'core:results_detail' survey.pk %}" class="btn btn-dark btn-sm">View full results</a>
     </div>
 </div>
 {% endfor %}

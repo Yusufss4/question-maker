@@ -12,7 +12,7 @@
             <div class="col-12 col-md-6 col-lg-5">
                 <div class="card shadow-sm border-0">
                     <div class="card-body p-4 p-md-5">
-                        <h1 class="h3 mb-3 fw-bold text-primary">Questionnaire</h1>
+                        <h1 class="h3 mb-3 fw-bold text-dark">Questionnaire</h1>
                         <p class="text-muted mb-4">Enter your 4-character code to vote on surveys.</p>
                         <form method="post" action="{% url 'core:login' %}">
                             {% csrf_token %}
@@ -23,12 +23,8 @@
                                 <div class="invalid-feedback d-block">{{ form.enter_pass.errors.0 }}</div>
                                 {% endif %}
                             </div>
-                            <button type="submit" class="btn btn-primary btn-lg w-100">Login</button>
+                            <button type="submit" class="btn btn-dark btn-lg w-100">Login</button>
                         </form>
-                        <hr class="my-4">
-                        <p class="text-center mb-0 small text-muted">
-                            <a href="{% url 'core:admin_login' %}" class="text-decoration-none">Admin login</a>
-                        </p>
                     </div>
                 </div>
             </div>
