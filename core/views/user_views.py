@@ -44,6 +44,9 @@ def survey_list(request):
         for o in option_stats:
             o.vote_pct = (100 * o.vote_count / total_votes) if total_votes else 0
             o.weighted_pct = (100 * (o.weighted_total or 0) / total_weighted) if total_weighted else 0
+        max_weighted = max((o.weighted_total or 0 for o in option_stats), default=0)
+        for o in option_stats:
+            o.is_weighted_winner = (o.weighted_total or 0) == max_weighted and max_weighted > 0
         closed_with_preview.append((survey, list(option_stats)))
     return render(request, "user/survey_list.html", {
         "active_with_forms": active_with_forms,
@@ -117,6 +120,9 @@ def results_detail(request, pk):
     for o in option_stats:
         o.vote_pct = (100 * o.vote_count / total_votes) if total_votes else 0
         o.weighted_pct = (100 * (o.weighted_total or 0) / total_weighted) if total_weighted else 0
+    max_weighted = max((o.weighted_total or 0 for o in option_stats), default=0)
+    for o in option_stats:
+        o.is_weighted_winner = (o.weighted_total or 0) == max_weighted and max_weighted > 0
     return render(request, "user/results_detail.html", {
         "survey": survey,
         "option_stats": option_stats,

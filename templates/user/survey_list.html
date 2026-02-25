@@ -54,7 +54,7 @@
                 </thead>
                 <tbody>
                     {% for opt in option_stats %}
-                    <tr>
+                    <tr class="{% if opt.is_weighted_winner %}table-success{% endif %}">
                         <td>{{ opt.option_text }}</td>
                         <td>{{ opt.vote_count }}</td>
                         <td>{{ opt.vote_pct|floatformat:1 }}%</td>
