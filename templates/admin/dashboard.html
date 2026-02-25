@@ -1,0 +1,32 @@
+{% extends "admin/base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<h1 class="h2 mb-2">Dashboard</h1>
+<p class="text-muted mb-4">Welcome, {{ request.user.username }}.</p>
+<div class="row g-3">
+    <div class="col-12 col-md-4">
+        <a href="{% url 'core:admin_survey_list' %}" class="card text-decoration-none border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title text-dark">Surveys</h2>
+                <p class="card-text text-muted small mb-0">Create, edit, and publish surveys.</p>
+            </div>
+        </a>
+    </div>
+    <div class="col-12 col-md-4">
+        <a href="{% url 'core:admin_user_list' %}" class="card text-decoration-none border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title text-dark">Users</h2>
+                <p class="card-text text-muted small mb-0">Manage voters and export to Excel.</p>
+            </div>
+        </a>
+    </div>
+    <div class="col-12 col-md-4">
+        <a href="{% url 'core:admin_vote_reset' %}" class="card text-decoration-none border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title text-dark">Reset vote</h2>
+                <p class="card-text text-muted small mb-0">Remove a user's vote for a survey.</p>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

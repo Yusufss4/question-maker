@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Active Surveys{% endblock %}
+{% block content %}
+<h1 class="h2 mb-4">Active Surveys</h1>
+{% if surveys %}
+<div class="list-group">
+    {% for survey in surveys %}
+    <a href="{% url 'core:survey_vote' survey.pk %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+        <span>{{ survey.question_text }}</span>
+        <span class="badge bg-primary rounded-pill">Closes {{ survey.end_date_time|date:"M j, H:i" }}</span>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card border-0 shadow-sm">
+    <div class="card-body text-center py-5 text-muted">
+        <p class="mb-0">No active surveys at the moment.</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

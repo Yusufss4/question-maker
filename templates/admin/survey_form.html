@@ -1,0 +1,41 @@
+{% extends "admin/base.html" %}
+{% block title %}{% if survey %}Edit survey{% else %}Create survey{% endif %}{% endblock %}
+{% block content %}
+<h1 class="h2 mb-4">{% if survey %}Edit survey{% else %}Create survey{% endif %}</h1>
+<form method="post">
+    {% csrf_token %}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            {% for field in form %}
+            <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}<div class="invalid-feedback d-block">{{ field.errors.0 }}</div>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white py-3"><h2 class="h5 mb-0">Options</h2></div>
+        <div class="card-body">
+            {{ formset.management_form }}
+            <div class="table-responsive">
+                <table class="table table-align-middle">
+                    <thead><tr><th>Option text</th>{% if not survey or not has_votes %}<th class="text-center">Delete?</th>{% endif %}</tr></thead>
+                    <tbody>
+                        {% for f in formset %}
+                        <tr>
+                            <td>{{ f.id }}{{ f.option_text }}{% if f.option_text.errors %}<div class="text-danger small">{{ f.option_text.errors.0 }}</div>{% endif %}</td>
+                            {% if not survey or not has_votes %}<td class="text-center">{{ f.DELETE }}</td>{% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if formset.non_form_errors %}<div class="text-danger small">{{ formset.non_form_errors.0 }}</div>{% endif %}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-dark">Save</button>
+    <a href="{% url 'core:admin_survey_list' %}" class="btn btn-outline-secondary">Cancel</a>
+</form>
+{% endblock %}

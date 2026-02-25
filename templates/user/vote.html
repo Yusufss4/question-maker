@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Vote{% endblock %}
+{% block content %}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <h1 class="h3 mb-4">{{ survey.question_text }}</h1>
+        {% if already_voted %}
+        <div class="alert alert-info">
+            You have already voted for this survey (you chose: <strong>{{ existing_vote.option.option_text }}</strong>).
+        </div>
+        <a href="{% url 'core:survey_list' %}" class="btn btn-outline-primary">Back to active surveys</a>
+        {% else %}
+        <form method="post" action="{% url 'core:survey_vote' survey.pk %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label fw-semibold">{{ form.option.label }}</label>
+                <div class="border rounded p-3 bg-white">
+                    {% for choice in form.option %}
+                    <div class="form-check mb-2">
+                        {{ choice.tag }}
+                        <label class="form-check-label" for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if form.option.errors %}<div class="text-danger small mt-1">{{ form.option.errors.0 }}</div>{% endif %}
+                {% if form.non_field_errors %}<div class="text-danger small mt-1">{{ form.non_field_errors.0 }}</div>{% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary">Submit vote</button>
+        </form>
+        <hr class="my-3">
+        <a href="{% url 'core:survey_list' %}" class="btn btn-outline-secondary btn-sm">Back to active surveys</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
