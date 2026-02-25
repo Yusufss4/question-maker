@@ -62,6 +62,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "core.context_processors.voter_context",
             ],
         },
     },
@@ -110,6 +111,12 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
+
+# 24-hour time format (no AM/PM)
+TIME_FORMAT = "H:i"
+DATE_FORMAT = "d M Y"
+DATETIME_FORMAT = "d M Y H:i"
+USE_L10N = False
 
 
 # Static files (CSS, JavaScript, Images)

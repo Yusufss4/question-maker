@@ -39,12 +39,19 @@ class AdminLoginForm(AuthenticationForm):
 
 # ----- Survey (admin) -----
 class SurveyForm(forms.ModelForm):
+    end_date_time = forms.SplitDateTimeField(
+        widget=forms.SplitDateTimeWidget(
+            date_attrs={"type": "date", "class": "form-control"},
+            time_attrs={"type": "time", "class": "form-control"},
+        ),
+        label="End date/time",
+    )
+
     class Meta:
         model = Survey
         fields = ["question_text", "end_date_time", "is_published"]
         widgets = {
             "question_text": forms.Textarea(attrs={"rows": 3, "class": "form-control"}),
-            "end_date_time": forms.DateTimeInput(attrs={"type": "datetime-local", "class": "form-control"}),
             "is_published": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
 
@@ -63,11 +70,11 @@ OptionFormSetFactory = forms.inlineformset_factory(
     Survey,
     Option,
     fields=("option_text",),
-    extra=2,
+    extra=5,
     min_num=2,
     validate_min=True,
     formset=OptionFormSet,
-    widgets={"option_text": forms.TextInput(attrs={"class": "form-control"})},
+    widgets={"option_text": forms.TextInput(attrs={"class": "form-control", "placeholder": "Option text"})},
 )
 
 

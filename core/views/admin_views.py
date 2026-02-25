@@ -93,6 +93,27 @@ def admin_survey_toggle_publish(request, pk):
     return redirect("core:admin_survey_list")
 
 
+@staff_required
+@require_http_methods(["POST"])
+@csrf_protect
+def admin_survey_close_now(request, pk):
+    """Close the survey immediately (regardless of end date)."""
+    survey = get_object_or_404(Survey, pk=pk)
+    survey.end_date_time = timezone.now()
+    survey.save(update_fields=["end_date_time"])
+    messages.success(request, "Survey closed.")
+    return redirect("core:admin_survey_list")
+
+
+@staff_required
+@require_http_methods(["GET"])
+def admin_survey_votes(request, pk):
+    """Show who voted for this survey (admin view)."""
+    survey = get_object_or_404(Survey, pk=pk)
+    votes = Vote.objects.filter(survey=survey).select_related("voter", "option").order_by("voter__full_name")
+    return render(request, "admin/survey_votes.html", {"survey": survey, "votes": votes})
+
+
 # ----- Users -----
 @staff_required
 @require_http_methods(["GET"])

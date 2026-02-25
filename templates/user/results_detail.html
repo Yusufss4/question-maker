@@ -2,7 +2,7 @@
 {% block title %}Results: {{ survey.question_text|truncatewords:10 }}{% endblock %}
 {% block content %}
 <h1 class="h2 mb-2">{{ survey.question_text }}</h1>
-<p class="text-muted mb-4">Survey closed {{ survey.end_date_time|date:"M j, Y H:i" }}.</p>
+<p class="text-muted mb-4">Closed {{ survey.end_date_time|date:"d M Y H:i" }}.</p>
 
 <div class="card border-0 shadow-sm mb-4">
     <div class="card-header bg-white py-3">
@@ -12,18 +12,43 @@
         <div class="table-responsive">
             <table class="table table-hover mb-0">
                 <thead class="table-light">
-                    <tr><th>Option</th><th>Vote count</th><th>Weighted total</th></tr>
+                    <tr><th>Option</th><th>Vote count</th><th>%</th><th>Weighted total</th><th>%</th></tr>
                 </thead>
                 <tbody>
                     {% for opt in option_stats %}
                     <tr>
                         <td>{{ opt.option_text }}</td>
                         <td>{{ opt.vote_count }}</td>
+                        <td>{{ opt.vote_pct|floatformat:1 }}%</td>
                         <td>{{ opt.weighted_total|default:0 }}</td>
+                        <td>{{ opt.weighted_pct|floatformat:1 }}%</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4" style="max-width: 520px;">
+    <div class="col-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-2">
+                <h2 class="h6 mb-0 fw-semibold">Vote count</h2>
+            </div>
+            <div class="card-body py-2 px-2">
+                <canvas id="chartVotes" height="120"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-2">
+                <h2 class="h6 mb-0 fw-semibold">Weighted total</h2>
+            </div>
+            <div class="card-body py-2 px-2">
+                <canvas id="chartWeighted" height="120"></canvas>
+            </div>
         </div>
     </div>
 </div>
@@ -51,5 +76,51 @@
         </div>
     </div>
 </div>
-<a href="{% url 'core:results_list' %}" class="btn btn-outline-primary">Back to results</a>
+<a href="{% url 'core:survey_list' %}" class="btn btn-outline-primary">Back to surveys</a>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script>
+(function() {
+    const optionLabels = [{% for opt in option_stats %}"{{ opt.option_text|escapejs }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const voteCounts = [{% for opt in option_stats %}{{ opt.vote_count }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const weightedTotals = [{% for opt in option_stats %}{{ opt.weighted_total|default:0 }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+
+    const colors = ['rgba(13, 110, 253, 0.8)', 'rgba(25, 135, 84, 0.8)', 'rgba(253, 126, 20, 0.8)', 'rgba(214, 51, 132, 0.8)', 'rgba(102, 16, 242, 0.8)', 'rgba(32, 201, 151, 0.8)'];
+    const borders = ['rgb(13, 110, 253)', 'rgb(25, 135, 84)', 'rgb(253, 126, 20)', 'rgb(214, 51, 132)', 'rgb(102, 16, 242)', 'rgb(32, 201, 151)'];
+    const barColors = optionLabels.map(function(_, i) { return colors[i % colors.length]; });
+    const barBorders = optionLabels.map(function(_, i) { return borders[i % borders.length]; });
+
+    const chartOpts = {
+        responsive: true,
+        maintainAspectRatio: true,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { beginAtZero: true, ticks: { stepSize: 1 } },
+            y: { beginAtZero: true }
+        }
+    };
+
+    if (document.getElementById('chartVotes')) {
+        new Chart(document.getElementById('chartVotes'), {
+            type: 'bar',
+            data: {
+                labels: optionLabels,
+                datasets: [{ label: 'Votes', data: voteCounts, backgroundColor: barColors, borderColor: barBorders, borderWidth: 1 }]
+            },
+            options: chartOpts
+        });
+    }
+    if (document.getElementById('chartWeighted')) {
+        new Chart(document.getElementById('chartWeighted'), {
+            type: 'bar',
+            data: {
+                labels: optionLabels,
+                datasets: [{ label: 'Weighted', data: weightedTotals, backgroundColor: barColors, borderColor: barBorders, borderWidth: 1 }]
+            },
+            options: chartOpts
+        });
+    }
+})();
+</script>
 {% endblock %}

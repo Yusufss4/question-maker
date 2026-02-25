@@ -19,7 +19,7 @@ class Survey(models.Model):
     """A single-question survey with multiple options (single-choice)."""
     question_text = models.TextField()
     end_date_time = models.DateTimeField(db_index=True)
-    is_published = models.BooleanField(default=False)
+    is_published = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -21,7 +21,7 @@
                 {% for survey in surveys %}
                 <tr>
                     <td>{{ survey.question_text|truncatewords:15 }}</td>
-                    <td>{{ survey.end_date_time|date:"M j, Y H:i" }}</td>
+                    <td>{{ survey.end_date_time|date:"d M Y H:i" }}</td>
                     <td>
                         {% if survey.is_closed %}
                         <span class="badge bg-secondary">Closed</span>
@@ -31,14 +31,17 @@
                     </td>
                     <td>{% if survey.is_published %}Yes{% else %}No{% endif %}</td>
                     <td class="text-end">
-                        {% if not survey.is_closed %}
-                        <a href="{% url 'core:admin_survey_edit' survey.pk %}" class="btn btn-sm btn-outline-dark me-1">Edit</a>
+                        <a href="{% url 'core:admin_survey_votes' survey.pk %}" class="btn btn-sm btn-outline-secondary me-1">View votes</a>
                         <form class="d-inline" method="post" action="{% url 'core:admin_survey_toggle_publish' survey.pk %}">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-sm {% if survey.is_published %}btn-outline-warning{% else %}btn-outline-success{% endif %}">{% if survey.is_published %}Unpublish{% else %}Publish{% endif %}</button>
+                            <button type="submit" class="btn btn-sm {% if survey.is_published %}btn-outline-warning{% else %}btn-outline-success{% endif %} me-1">{% if survey.is_published %}Unpublish{% else %}Publish{% endif %}</button>
                         </form>
-                        {% else %}
-                        —
+                        {% if not survey.is_closed %}
+                        <a href="{% url 'core:admin_survey_edit' survey.pk %}" class="btn btn-sm btn-outline-dark me-1">Edit</a>
+                        <form class="d-inline" method="post" action="{% url 'core:admin_survey_close_now' survey.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Close now</button>
+                        </form>
                         {% endif %}
                     </td>
                 </tr>

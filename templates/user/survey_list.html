@@ -1,20 +1,80 @@
 {% extends "base.html" %}
-{% block title %}Active Surveys{% endblock %}
+{% block title %}Surveys{% endblock %}
 {% block content %}
-<h1 class="h2 mb-4">Active Surveys</h1>
-{% if surveys %}
-<div class="list-group">
-    {% for survey in surveys %}
-    <a href="{% url 'core:survey_vote' survey.pk %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-        <span>{{ survey.question_text }}</span>
-        <span class="badge bg-primary rounded-pill">Closes {{ survey.end_date_time|date:"M j, H:i" }}</span>
-    </a>
-    {% endfor %}
+{% if active_with_forms %}
+<h2 class="h5 text-muted mb-3">Active</h2>
+{% for survey, existing_vote, form in active_with_forms %}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <h3 class="h5 mb-3">{{ survey.question_text }}</h3>
+        <p class="small text-muted mb-3">Closes in {{ survey.end_date_time|timeuntil }}</p>
+        {% if existing_vote %}
+        <div class="alert alert-info py-2 mb-0">You voted for: <strong>{{ existing_vote.option.option_text }}</strong>
+        </div>
+        {% else %}
+        <form method="post" action="{% url 'core:survey_vote' survey.pk %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <div class="border rounded p-3 bg-white">
+                    {% for choice in form.option %}
+                    <div class="form-check mb-2">
+                        {{ choice.tag }}
+                        <label class="form-check-label" for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if form.option.errors %}<div class="text-danger small mt-1">{{ form.option.errors.0 }}</div>{% endif %}
+                {% if form.non_field_errors %}<div class="text-danger small mt-1">{{ form.non_field_errors.0 }}</div>{% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary">Submit vote</button>
+        </form>
+        {% endif %}
+    </div>
 </div>
-{% else %}
+{% endfor %}
+{% endif %}
+
+{% if closed_with_preview %}
+<h2 class="h5 text-muted mb-3 mt-4">Closed</h2>
+{% for survey, option_stats in closed_with_preview %}
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+        <h3 class="h6 mb-2">{{ survey.question_text }}</h3>
+        <p class="small text-muted mb-2">Closed {{ survey.end_date_time|date:"d M Y H:i" }}</p>
+        <div class="table-responsive mb-3">
+            <table class="table table-sm table-bordered mb-0 small">
+                <thead class="table-light">
+                    <tr>
+                        <th>Option</th>
+                        <th>Votes</th>
+                        <th>%</th>
+                        <th>Weighted</th>
+                        <th>%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for opt in option_stats %}
+                    <tr>
+                        <td>{{ opt.option_text }}</td>
+                        <td>{{ opt.vote_count }}</td>
+                        <td>{{ opt.vote_pct|floatformat:1 }}%</td>
+                        <td>{{ opt.weighted_total|default:0 }}</td>
+                        <td>{{ opt.weighted_pct|floatformat:1 }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+        </div>
+        <a href="{% url 'core:results_detail' survey.pk %}" class="btn btn-primary btn-sm">View full results</a>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+{% if not active_with_forms and not closed_with_preview %}
 <div class="card border-0 shadow-sm">
     <div class="card-body text-center py-5 text-muted">
-        <p class="mb-0">No active surveys at the moment.</p>
+        <p class="mb-0">No surveys at the moment.</p>
     </div>
 </div>
 {% endif %}
